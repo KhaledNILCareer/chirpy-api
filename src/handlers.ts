@@ -46,5 +46,21 @@ export function handlerValidateChirp(
     res.status(400).json({ error: "Chirp is too long" });
     return
   }
-  res.send({"valid":true})
+  res.status(200).json({
+    cleanedBody: cleanChirp(body),
+  });
+}
+
+function cleanChirp(body: string): string {
+  const profaneWords = ["kerfuffle", "sharbert", "fornax"];
+
+  const cleanedWords = body.split(" ").map((originalWord) => {
+    const normalizedWord = originalWord.toLowerCase();
+
+    return profaneWords.includes(normalizedWord)
+      ? "****"
+      : originalWord;
+  });
+
+  return cleanedWords.join(" ");
 }
