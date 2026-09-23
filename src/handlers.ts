@@ -30,3 +30,21 @@ export function handlerReset(
   res.set("Content-Type", "text/plain; charset=utf-8");
   res.send("Hits are reset.");
 }
+
+export function handlerValidateChirp(
+  req: Request,
+  res: Response,
+): void {
+  const body = req.body?.body;
+
+  // TODO: Validate the request body
+  if(!body || typeof body !== "string"){
+    res.status(400).json({"error":"Invalid chirp body"})
+    return
+  }
+  if(body.length > 140){
+    res.status(400).json({ error: "Chirp is too long" });
+    return
+  }
+  res.send({"valid":true})
+}
