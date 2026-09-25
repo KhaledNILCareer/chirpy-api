@@ -3,6 +3,7 @@ import express from "express";
 import {
   middlewareLogResponses,
   middlewareMetricsInc,
+  middlewareErrorHandler
 } from "./middleware.js";
 
 import { 
@@ -28,6 +29,8 @@ app.use(
   middlewareMetricsInc,
   express.static("./src/app"),
 );
+
+app.use(middlewareErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

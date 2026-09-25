@@ -31,10 +31,10 @@ export function handlerReset(
   res.send("Hits are reset.");
 }
 
-export function handlerValidateChirp(
+export async function handlerValidateChirp(
   req: Request,
   res: Response,
-): void {
+): Promise<void> {
   const body = req.body?.body;
 
   // TODO: Validate the request body
@@ -43,8 +43,7 @@ export function handlerValidateChirp(
     return
   }
   if(body.length > 140){
-    res.status(400).json({ error: "Chirp is too long" });
-    return
+    throw new Error("Chirp is too long")
   }
   res.status(200).json({
     cleanedBody: cleanChirp(body),
