@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { config } from "./config.js";
+import { BadRequestError } from "./errors.js";
 
 export function handlerReadiness(req: Request, res: Response): void {
   res.set("Content-Type", "text/plain; charset=utf-8");
@@ -42,8 +43,10 @@ export async function handlerValidateChirp(
     res.status(400).json({"error":"Invalid chirp body"})
     return
   }
-  if(body.length > 140){
-    throw new Error("Chirp is too long")
+  if (body.length > 140) {
+    throw new BadRequestError(
+      "Chirp is too long. Max length is 140"
+    );
   }
   res.status(200).json({
     cleanedBody: cleanChirp(body),
