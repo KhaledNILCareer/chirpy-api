@@ -2,13 +2,14 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "nodenext",
-    "rootDir": "./src",
+    "moduleResolution": "nodenext",
+    "rootDir": ".",
     "outDir": "./dist",
     "strict": true,
-    "moduleResolution": "nodenext",
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "./drizzle.config.ts"],
   "exclude": ["node_modules"]
 }
