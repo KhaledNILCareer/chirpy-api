@@ -13,7 +13,8 @@ import {
   handlerMetrics,
   handlerReadiness,
   handlerReset,
-  handlerValidateChirp
+  handlerValidateChirp,
+  handlerCreateUser
 } from "./handlers.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
@@ -32,6 +33,7 @@ app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerMetrics);
 app.post("/admin/reset", handlerReset);
 app.post("/api/validate_chirp", handlerValidateChirp);
+app.post("/api/users", handlerCreateUser);
 
 app.use(
   "/app",

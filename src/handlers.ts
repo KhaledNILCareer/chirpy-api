@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { config } from "./config.js";
 import { BadRequestError } from "./errors.js";
+import { createUser, deleteAllUsers } from "./db/queries/users.js";
 
 export function handlerReadiness(req: Request, res: Response): void {
   res.set("Content-Type", "text/plain; charset=utf-8");
@@ -22,14 +23,23 @@ export function handlerMetrics(
     `)
 }
 
-export function handlerReset(
+export async function handlerReset(
   req: Request,
   res: Response,
-): void {
+): Promise<void> {
+  if(config.api.platform !== "dev"){
+    res.status(403).json({
+      error: "Forbidden",
+    })
+    return;
+  }
+
+  await deleteAllUsers()
   config.api.fileserverHits = 0;
 
-  res.set("Content-Type", "text/plain; charset=utf-8");
-  res.send("Hits are reset.");
+  res.status(200).json({
+    message: "Reset successful",
+  });
 }
 
 export async function handlerValidateChirp(
@@ -65,4 +75,14 @@ function cleanChirp(body: string): string {
   });
 
   return cleanedWords.join(" ");
+}
+
+export async function handlerCreateUser(req: Request, res: Response) {
+  const body = req.body;
+
+  const user = await createUser({
+    email: body.email,
+  });
+
+  res.status(201).json(user);
 }
