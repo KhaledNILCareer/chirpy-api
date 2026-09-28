@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { config } from "./config.js";
 import { BadRequestError } from "./errors.js";
 import { createUser, deleteAllUsers } from "./db/queries/users.js";
+import { createChirp } from "./db/queries/chirps.js";
 
 export function handlerReadiness(req: Request, res: Response): void {
   res.set("Content-Type", "text/plain; charset=utf-8");
@@ -42,26 +43,36 @@ export async function handlerReset(
   });
 }
 
-export async function handlerValidateChirp(
+export async function handlerCreateChirp(
   req: Request,
   res: Response,
 ): Promise<void> {
   const body = req.body?.body;
+  const userId = req.body?.userId;
 
-  // TODO: Validate the request body
-  if(!body || typeof body !== "string"){
-    res.status(400).json({"error":"Invalid chirp body"})
-    return
+  if (!body || typeof body !== "string") {
+    res.status(400).json({
+      error: "Invalid chirp body",
+    });
+    return;
   }
+
   if (body.length > 140) {
     throw new BadRequestError(
       "Chirp is too long. Max length is 140"
     );
   }
-  res.status(200).json({
-    cleanedBody: cleanChirp(body),
+
+  const cleanedBody = cleanChirp(body);
+
+  const chirp = await createChirp({
+    body: cleanedBody,
+    userId: userId,
   });
+
+  res.status(201).json(chirp);
 }
+
 
 function cleanChirp(body: string): string {
   const profaneWords = ["kerfuffle", "sharbert", "fornax"];
