@@ -14,6 +14,7 @@ import {
   handlerReadiness,
   handlerReset,
   handlerCreateChirp,
+  handlerGetChirps,
   handlerCreateUser
 } from "./handlers.js";
 
@@ -33,6 +34,7 @@ app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerMetrics);
 app.post("/admin/reset", handlerReset);
 app.post("/api/chirps", handlerCreateChirp);
+app.get("/api/chirps", handlerGetChirps);
 app.post("/api/users", handlerCreateUser);
 
 app.use(
