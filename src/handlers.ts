@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { config } from "./config.js";
 import { BadRequestError } from "./errors.js";
 import { createUser, deleteAllUsers } from "./db/queries/users.js";
-import { createChirp, getAllChirps } from "./db/queries/chirps.js";
+import { createChirp, getAllChirps, getChirpById } from "./db/queries/chirps.js";
 
 export function handlerReadiness(req: Request, res: Response): void {
   res.set("Content-Type", "text/plain; charset=utf-8");
@@ -104,4 +104,22 @@ export async function handlerGetChirps(
 ): Promise<void> {
   const chirps = await getAllChirps()
   res.status(200).json(chirps)
+}
+
+export async function handlerGetChirp(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const chirpId = req.params.chirpId as string;
+
+  const chirp = await getChirpById(chirpId);
+
+  if (!chirp) {
+    res.status(404).json({
+      error: "Chirp not found",
+    });
+    return;
+  }
+
+  res.status(200).json(chirp);
 }
