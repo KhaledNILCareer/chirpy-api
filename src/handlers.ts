@@ -1,8 +1,9 @@
 import type { Request, Response } from "express";
 import { config } from "./config.js";
 import { BadRequestError } from "./errors.js";
-import { createUser, deleteAllUsers } from "./db/queries/users.js";
+import { createUser, deleteAllUsers, getUserByEmail } from "./db/queries/users.js";
 import { createChirp, getAllChirps, getChirpById } from "./db/queries/chirps.js";
+import { hashPassword, checkPasswordHash } from "./auth.js";
 
 export function handlerReadiness(req: Request, res: Response): void {
   res.set("Content-Type", "text/plain; charset=utf-8");
@@ -91,11 +92,43 @@ function cleanChirp(body: string): string {
 export async function handlerCreateUser(req: Request, res: Response) {
   const body = req.body;
 
+  const hashedPassword = await hashPassword(body.password)
   const user = await createUser({
     email: body.email,
+    hashedPassword: hashedPassword,
   });
 
-  res.status(201).json(user);
+  const { hashedPassword: _, ...userResponse } = user;
+
+  res.status(201).json(userResponse);
+}
+
+export async function handlerLogin(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const body = req.body;
+
+  const user = await getUserByEmail(body.email);
+
+  if (!user) {
+    res.status(401).json("incorrect email or password");
+    return;
+  }
+
+  const passwordMatches = await checkPasswordHash(
+    body.password,
+    user.hashedPassword,
+  );
+
+  if (!passwordMatches) {
+    res.status(401).json("incorrect email or password");
+    return;
+  }
+
+  const { hashedPassword: _, ...userResponse } = user;
+
+  res.status(200).json(userResponse);
 }
 
 export async function handlerGetChirps(

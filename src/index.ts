@@ -16,7 +16,8 @@ import {
   handlerCreateChirp,
   handlerGetChirps,
   handlerGetChirp,
-  handlerCreateUser
+  handlerCreateUser,
+  handlerLogin
 } from "./handlers.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
@@ -38,6 +39,7 @@ app.post("/api/chirps", handlerCreateChirp);
 app.get("/api/chirps", handlerGetChirps);
 app.get("/api/chirps/:chirpId", handlerGetChirp);
 app.post("/api/users", handlerCreateUser);
+app.post("/api/login", handlerLogin);
 
 app.use(
   "/app",
